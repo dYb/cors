@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <a id="link1">
+  link1
+  </a>
+  <a id="link2">
+  link2
+  </a>
+  <button>POST</button>
+  <script type="text/javascript">
+    var ajax;
+
+    ajax = function(option) {
+      var data, dataType, key, method, request;
+      if (!option.url) {
+        throw new Error('Need for url');
+      }
+      dataType = option.dataType || 'text';
+      method = option.method || 'GET';
+      data = '';
+      if (!!option.data && typeof option.data !== 'string') {
+        for (key in option.data) {
+          data += key + "=" + option.data[key] + "&";
+        }
+        data = data.slice(0, data.length - 1);
+      } else {
+        data = option.data;
+      }
+      request = new XMLHttpRequest();
+      request.open(method, option.url, true);
+      if (method.toUpperCase() === 'POST') {
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+      }
+      request.onload = function() {
+        var result;
+        if (request.status >= 200 && request.status < 400) {
+          if (dataType.toUpperCase() === 'JSON') {
+            result = JSON.parse(request.responseText);
+          }
+          if (typeof option.success === "function") {
+            option.success(result);
+          }
+        } else {
+          if (typeof option.error === "function") {
+            option.error();
+          }
+        }
+      };
+      request.send(data);
+    };
+    document.querySelector('#link1').onclick = function() {
+      ajax({
+        url: 'http://abc.163.com:3000/get?url=http%3A%2F%2Fc.m.163.com%2Fnc%2Fvote%2Fresult%2F53297.html',
+        method: 'get',
+        dataType: 'json',
+        success: (data) => {
+          console.log(data)
+        }
+      })
+    }
+    document.querySelector('#link2').onclick = function() {
+      ajax({
+        url: 'http://abc.163.com:3000/get?url=http%3A%2F%2Fc.m.163.com%2Fnc%2Fvote%2Fresult%2F53297.html&cors=http%3A%2F%2Fabc.163.com%3A3000',
+        method: 'get',
+        dataType: 'json',
+        success: (data) => {
+          console.log(data)
+        }
+      })
+    }
+    document.querySelector('button').onclick = function() {
+      ajax({
+        url: 'http://abc.163.com:3000/post?url=http%3A%2F%2Fc.m.163.com%2Fnc%2Fvote%2Fresult%2F53297.html',
+        method: 'post',
+        success: (data) => {
+          console.log(data)
+        }
+      })
+    }
+  </script>
+</body>
+</html>
